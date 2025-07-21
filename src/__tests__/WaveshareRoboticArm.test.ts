@@ -1,6 +1,13 @@
-import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
+import AbstractSpruceTest, {
+    test,
+    assert,
+    generateId,
+} from '@sprucelabs/test-utils'
 import axios from 'axios'
-import WaveshareRoboticArm, { RoboticArm } from '../modules/WaveshareRoboticArm'
+import WaveshareRoboticArm, {
+    RoboticArm,
+    RoboticArmOptions,
+} from '../modules/WaveshareRoboticArm'
 import FakeAxios from '../testDoubles/FakeAxios'
 
 export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
@@ -37,6 +44,36 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async canSetCustomIpAddress() {
+        const ipAddress = generateId()
+
+        await this.WaveshareRoboticArm({
+            ipAddress,
+        })
+
+        assert.isEqual(
+            this.secondCallToGet.url,
+            `http://${ipAddress}`,
+            'Should have called axios get with custom ip address!'
+        )
+    }
+
+    @test()
+    protected static async canSetCustomTimeoutMs() {
+        const timeoutMs = Math.random()
+
+        await this.WaveshareRoboticArm({
+            timeoutMs,
+        })
+
+        assert.isEqual(
+            this.secondCallToGet.config.timeout,
+            timeoutMs,
+            'Should have called axios get with custom config!'
+        )
+    }
+
     private static setFakeAxios() {
         WaveshareRoboticArm.axios = new FakeAxios() as typeof axios
         FakeAxios.resetTestDouble()
@@ -46,10 +83,14 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return FakeAxios.callsToGet[0]
     }
 
+    private static get secondCallToGet() {
+        return FakeAxios.callsToGet[1]
+    }
+
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
 
-    private static WaveshareRoboticArm() {
-        return WaveshareRoboticArm.Create()
+    private static WaveshareRoboticArm(options?: RoboticArmOptions) {
+        return WaveshareRoboticArm.Create(options)
     }
 }

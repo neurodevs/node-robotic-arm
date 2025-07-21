@@ -4,23 +4,33 @@ export default class WaveshareRoboticArm implements RoboticArm {
     public static Class?: RoboticArmConstructor
     public static axios = axios
 
-    private static ipAddress = '192.168.4.1'
-    private static baseUrl = `http://${this.ipAddress}`
+    private static defaultIpAddress = '192.168.4.1'
+    private static defaultTimeoutMs = 5000
 
     protected constructor() {}
 
-    public static async Create() {
-        await this.assertIpAddressIsReachable()
+    public static async Create(options?: RoboticArmOptions) {
+        await this.assertIsReachable(options)
         return new (this.Class ?? this)()
     }
 
-    protected static async assertIpAddressIsReachable() {
-        await this.axios.get(this.baseUrl, {
-            timeout: 5000,
+    private static async assertIsReachable(options?: RoboticArmOptions) {
+        const {
+            ipAddress = this.defaultIpAddress,
+            timeoutMs = this.defaultTimeoutMs,
+        } = options ?? {}
+
+        await this.axios.get(`http://${ipAddress}`, {
+            timeout: timeoutMs,
         })
     }
 }
 
 export interface RoboticArm {}
+
+export interface RoboticArmOptions {
+    ipAddress?: string
+    timeoutMs?: number
+}
 
 export type RoboticArmConstructor = new () => RoboticArm
