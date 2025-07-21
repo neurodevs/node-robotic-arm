@@ -2,7 +2,6 @@ import WaveshareRoboticArm from '../modules/WaveshareRoboticArm'
 
 async function main() {
     const instance = await WaveshareRoboticArm.Create()
-    await instance.resetToVertical()
 
     await instance.executeCommand({
         T: 102,

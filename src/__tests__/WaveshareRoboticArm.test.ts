@@ -5,6 +5,7 @@ import AbstractSpruceTest, {
 } from '@sprucelabs/test-utils'
 import axios from 'axios'
 import WaveshareRoboticArm, {
+    ExecutableCommand,
     RoboticArm,
     RoboticArmOptions,
 } from '../modules/WaveshareRoboticArm'
@@ -77,16 +78,12 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     @test()
     protected static async hasMethodResetToVertical() {
         await this.instance.resetToVertical()
+        this.assertResetToVertical()
+    }
 
-        const cmd = {
-            T: 102,
-            base: 0,
-            shoulder: 0,
-            elbow: 0,
-            hand: 3.1415926,
-            spd: 0,
-            acc: 0,
-        }
+    @test()
+    protected static async hasMethodExecuteCommand() {
+        const cmd = await this.executeCommand()
 
         assert.isEqualDeep(
             this.secondCallToGet,
@@ -96,12 +93,17 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
                     params: { json: JSON.stringify(cmd) },
                 },
             },
-            'Should reset to vertical!'
+            'Should execute command!'
         )
     }
 
     @test()
-    protected static async hasMethodExecuteCommand() {
+    protected static async executeCommandReturnsToVerticalAtEnd() {
+        await this.executeCommand()
+        this.assertResetToVertical(this.thirdCallToGet)
+    }
+
+    private static async executeCommand() {
         const cmd = {
             T: 1,
             base: 2,
@@ -114,15 +116,21 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
         await this.instance.executeCommand(cmd)
 
+        return cmd
+    }
+
+    private static assertResetToVertical(callToGet = this.secondCallToGet) {
         assert.isEqualDeep(
-            this.secondCallToGet,
+            callToGet,
             {
                 url: this.jsUrl,
                 config: {
-                    params: { json: JSON.stringify(cmd) },
+                    params: {
+                        json: JSON.stringify(this.resetToVerticalCommand),
+                    },
                 },
             },
-            'Should execute command!'
+            'Should reset to vertical!'
         )
     }
 
@@ -139,9 +147,23 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return FakeAxios.callsToGet[1]
     }
 
+    private static get thirdCallToGet() {
+        return FakeAxios.callsToGet[2]
+    }
+
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
+
+    private static resetToVerticalCommand: ExecutableCommand = {
+        T: 102,
+        base: 0,
+        shoulder: 0,
+        elbow: 0,
+        hand: 3.1415926,
+        spd: 0,
+        acc: 0,
+    }
 
     private static WaveshareRoboticArm(options?: RoboticArmOptions) {
         return WaveshareRoboticArm.Create(options)

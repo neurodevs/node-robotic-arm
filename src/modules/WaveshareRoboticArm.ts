@@ -31,6 +31,12 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async executeCommand(cmd: ExecutableCommand) {
+        const response = await this.executeCommandWithoutReset(cmd)
+        await this.resetToVertical()
+        return response
+    }
+
+    private async executeCommandWithoutReset(cmd: ExecutableCommand) {
         return await this.axios.get(`http://${this.ipAddress}/js`, {
             params: {
                 json: JSON.stringify(cmd),
@@ -39,7 +45,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async resetToVertical() {
-        return await this.executeCommand({
+        return await this.executeCommandWithoutReset({
             T: 102,
             base: 0,
             shoulder: 0,
@@ -73,7 +79,7 @@ export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
 export type RoboticArmConstructor = new () => RoboticArm
 
-interface ExecutableCommand {
+export interface ExecutableCommand {
     T: number
     base: number
     shoulder: number
