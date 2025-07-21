@@ -14,6 +14,16 @@ import FakeAxios from '../testDoubles/FakeAxios'
 export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static instance: RoboticArm
 
+    protected static async beforeAll() {
+        await super.beforeAll()
+
+        assert.isEqual(
+            WaveshareRoboticArm.waitAfterMs,
+            2000,
+            'Should have default waitAfterMs of 5000ms!'
+        )
+    }
+
     protected static async beforeEach() {
         await super.beforeEach()
 
@@ -103,6 +113,18 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         this.assertResetToVertical(this.thirdCallToGet)
     }
 
+    @test()
+    protected static async waitsAfterExecutingCommand() {
+        const t0 = Date.now()
+        await this.executeCommand()
+        const elapsed = Date.now() - t0
+
+        assert.isTrue(
+            elapsed >= this.waitAfterMs,
+            `Should have waited at least ${this.waitAfterMs}ms, but only waited ${elapsed}ms!`
+        )
+    }
+
     private static async executeCommand() {
         const cmd = {
             T: 1,
@@ -155,6 +177,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
 
+    private static readonly waitAfterMs = 2
+
     private static resetToVerticalCommand: ExecutableCommand = {
         T: 102,
         base: 0,
@@ -166,6 +190,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     private static WaveshareRoboticArm(options?: RoboticArmOptions) {
+        WaveshareRoboticArm.waitAfterMs = this.waitAfterMs
         return WaveshareRoboticArm.Create(options)
     }
 }

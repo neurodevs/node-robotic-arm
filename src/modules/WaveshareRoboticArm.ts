@@ -3,6 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 export default class WaveshareRoboticArm implements RoboticArm {
     public static Class?: RoboticArmConstructor
     public static axios = axios
+    public static waitAfterMs = 2000
     private static defaultIpAddress = '192.168.4.1'
     private static defaultTimeoutMs = 5000
 
@@ -37,11 +38,15 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     private async executeCommandWithoutReset(cmd: ExecutableCommand) {
-        return await this.axios.get(`http://${this.ipAddress}/js`, {
+        const response = await this.axios.get(`http://${this.ipAddress}/js`, {
             params: {
                 json: JSON.stringify(cmd),
             },
         })
+
+        await new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
+
+        return response
     }
 
     public async resetToVertical() {
@@ -62,6 +67,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     private get axios() {
         return WaveshareRoboticArm.axios
+    }
+
+    private get waitAfterMs() {
+        return WaveshareRoboticArm.waitAfterMs
     }
 }
 

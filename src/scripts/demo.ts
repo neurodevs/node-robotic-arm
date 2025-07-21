@@ -5,7 +5,7 @@ async function main() {
 
     await instance.executeCommand({
         T: 102,
-        base: 0,
+        base: 3.1415926,
         shoulder: 3.1415926 / 4,
         elbow: 3.1415926 / 4,
         hand: 3.1415926,
