@@ -2,8 +2,7 @@ import WaveshareRoboticArm from '../modules/WaveshareRoboticArm'
 
 async function main() {
     const instance = await WaveshareRoboticArm.Create()
-
-    console.log('Waveshare Robotic Arm instance created:', instance)
+    await instance.resetToVertical()
 }
 
 main().catch((error) => {

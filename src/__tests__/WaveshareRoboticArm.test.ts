@@ -18,7 +18,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
         this.setFakeAxios()
 
-        this.instance = this.WaveshareRoboticArm()
+        this.instance = await this.WaveshareRoboticArm()
     }
 
     @test()
@@ -71,6 +71,36 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             this.secondCallToGet.config.timeout,
             timeoutMs,
             'Should have called axios get with custom config!'
+        )
+    }
+
+    @test()
+    protected static async hasMethodResetToVertical() {
+        await this.instance.resetToVertical()
+
+        const url = `http://${this.ipAddress}/js`
+
+        const cmd = {
+            T: 102,
+            base: 0,
+            shoulder: 0,
+            elbow: 0,
+            hand: 3.1415926,
+            spd: 0,
+            acc: 0,
+        }
+
+        const config = {
+            params: { json: JSON.stringify(cmd) },
+        }
+
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url,
+                config,
+            },
+            'Should reset to vertical!'
         )
     }
 
