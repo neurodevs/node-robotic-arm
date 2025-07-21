@@ -125,7 +125,19 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
-    private static async executeCommand() {
+    @test()
+    protected static async executeCommandHasShouldResetFlag() {
+        await this.executeCommand(false)
+
+        const length = FakeAxios.callsToGet.length
+
+        assert.isTrue(
+            length == 2,
+            `Should have called axios twice, yet was ${length}!`
+        )
+    }
+
+    private static async executeCommand(shouldReset = true) {
         const cmd = {
             T: 1,
             base: 2,
@@ -136,7 +148,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             acc: 7,
         }
 
-        await this.instance.executeCommand(cmd)
+        await this.instance.executeCommand(cmd, shouldReset)
 
         return cmd
     }

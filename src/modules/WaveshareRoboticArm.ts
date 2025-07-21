@@ -31,9 +31,13 @@ export default class WaveshareRoboticArm implements RoboticArm {
         })
     }
 
-    public async executeCommand(cmd: ExecutableCommand) {
+    public async executeCommand(cmd: ExecutableCommand, shouldReset = true) {
         const response = await this.executeCommandWithoutReset(cmd)
-        await this.resetToVertical()
+
+        if (shouldReset) {
+            await this.resetToVertical()
+        }
+
         return response
     }
 
@@ -75,7 +79,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
 }
 
 export interface RoboticArm {
-    executeCommand(cmd: ExecutableCommand): Promise<AxiosResponse>
+    executeCommand(
+        cmd: ExecutableCommand,
+        shouldReset?: boolean
+    ): Promise<AxiosResponse>
     resetToVertical(): Promise<AxiosResponse>
 }
 
