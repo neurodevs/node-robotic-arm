@@ -78,8 +78,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     protected static async hasMethodResetToVertical() {
         await this.instance.resetToVertical()
 
-        const url = `http://${this.ipAddress}/js`
-
         const cmd = {
             T: 102,
             base: 0,
@@ -90,17 +88,41 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             acc: 0,
         }
 
-        const config = {
-            params: { json: JSON.stringify(cmd) },
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(cmd) },
+                },
+            },
+            'Should reset to vertical!'
+        )
+    }
+
+    @test()
+    protected static async hasMethodExecuteCommand() {
+        const cmd = {
+            T: 1,
+            base: 2,
+            shoulder: 3,
+            elbow: 4,
+            hand: 5,
+            spd: 6,
+            acc: 7,
         }
+
+        await this.instance.executeCommand(cmd)
 
         assert.isEqualDeep(
             this.secondCallToGet,
             {
-                url,
-                config,
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(cmd) },
+                },
             },
-            'Should reset to vertical!'
+            'Should execute command!'
         )
     }
 
@@ -119,6 +141,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
+    private static readonly jsUrl = `${this.baseUrl}/js`
 
     private static WaveshareRoboticArm(options?: RoboticArmOptions) {
         return WaveshareRoboticArm.Create(options)
