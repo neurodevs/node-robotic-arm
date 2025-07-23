@@ -48,12 +48,12 @@ export default class WaveshareRoboticArm implements RoboticArm {
             },
         })
 
-        await this.waitForTimeToFinish()
+        await this.waitAfterCommand()
 
         return response
     }
 
-    private waitForTimeToFinish() {
+    private waitAfterCommand() {
         return new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
     }
 
