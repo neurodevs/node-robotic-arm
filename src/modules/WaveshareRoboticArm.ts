@@ -48,9 +48,13 @@ export default class WaveshareRoboticArm implements RoboticArm {
             },
         })
 
-        await new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
+        await this.waitForTimeToFinish()
 
         return response
+    }
+
+    private waitForTimeToFinish() {
+        return new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
     }
 
     public async resetToVertical() {
