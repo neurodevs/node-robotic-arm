@@ -3,17 +3,10 @@ import WaveshareRoboticArm from '../modules/WaveshareRoboticArm'
 async function main() {
     const instance = await WaveshareRoboticArm.Create()
 
-    const pi = 3.1415926
-
-    await instance.executeCommand({
-        T: 102,
-        base: pi,
-        shoulder: pi / 4,
-        elbow: pi / 4,
-        hand: pi,
-        spd: 0,
-        acc: 0,
-    })
+    await instance.moveTo({ x: 200, y: 0, z: -50, spd: 0.25 })
+    await instance.moveTo({ x: 250, y: 0, z: -50, spd: 0.1 })
+    await instance.moveTo({ x: 250, y: 0, z: -40, spd: 0.25 })
+    await instance.moveTo({ x: 200, y: 0, z: -45, spd: 0.25 })
 }
 
 main().catch((error) => {
