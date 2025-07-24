@@ -58,7 +58,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
     }
 
-    public async moveTo(cmd: CartesianCommand) {
+    public async moveTo(cmd: MoveCommand) {
         const { x, y, z, t = this.pi, spd = 0 } = cmd
 
         return await this.executeCommandWithoutReset({
@@ -77,7 +77,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
             base: 0,
             shoulder: 0,
             elbow: 0,
-            hand: 3.1415926,
+            hand: this.pi,
             spd: 0,
             acc: 0,
         })
@@ -102,7 +102,7 @@ export interface RoboticArm {
         shouldReset?: boolean
     ): Promise<AxiosResponse>
 
-    moveTo(cmd: CartesianCommand): Promise<AxiosResponse>
+    moveTo(cmd: MoveCommand): Promise<AxiosResponse>
 
     resetToVertical(): Promise<AxiosResponse>
 }
@@ -116,25 +116,25 @@ export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
 export type RoboticArmConstructor = new () => RoboticArm
 
-export type ExecutableCommand = CommandCode & (JointCommand | CartesianCommand)
+export type ExecutableCommand = CommandCode & (MoveCommand | JointsCommand)
 
 export interface CommandCode {
     T: number
 }
 
-export interface JointCommand {
+export interface MoveCommand {
+    x: number
+    y: number
+    z: number
+    t?: number
+    spd?: number
+}
+
+export interface JointsCommand {
     base: number
     shoulder: number
     elbow: number
     hand: number
     spd: number
     acc: number
-}
-
-export interface CartesianCommand {
-    x: number
-    y: number
-    z: number
-    t?: number
-    spd?: number
 }
