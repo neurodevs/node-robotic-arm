@@ -8,6 +8,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private static defaultTimeoutMs = 5000
 
     private ipAddress: string
+    private pi = 3.1415926
 
     protected constructor(options?: RoboticArmOptions) {
         const { ipAddress } = options ?? {}
@@ -57,6 +58,19 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
     }
 
+    public async moveTo(cmd: CartesianCommand) {
+        const { x, y, z, t = this.pi, spd = 0 } = cmd
+
+        return await this.executeCommandWithoutReset({
+            T: 104,
+            x,
+            y,
+            z,
+            t,
+            spd,
+        })
+    }
+
     public async resetToVertical() {
         return await this.executeCommandWithoutReset({
             T: 102,
@@ -87,6 +101,9 @@ export interface RoboticArm {
         cmd: ExecutableCommand,
         shouldReset?: boolean
     ): Promise<AxiosResponse>
+
+    moveTo(cmd: CartesianCommand): Promise<AxiosResponse>
+
     resetToVertical(): Promise<AxiosResponse>
 }
 
@@ -99,12 +116,25 @@ export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
 export type RoboticArmConstructor = new () => RoboticArm
 
-export interface ExecutableCommand {
+export type ExecutableCommand = CommandCode & (JointCommand | CartesianCommand)
+
+export interface CommandCode {
     T: number
+}
+
+export interface JointCommand {
     base: number
     shoulder: number
     elbow: number
     hand: number
     spd: number
     acc: number
+}
+
+export interface CartesianCommand {
+    x: number
+    y: number
+    z: number
+    t?: number
+    spd?: number
 }

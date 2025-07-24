@@ -137,6 +137,35 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async moveToCommandCallsAxios() {
+        const cmd = {
+            x: Math.random(),
+            y: Math.random(),
+            z: Math.random(),
+        }
+
+        await this.instance.moveTo(cmd)
+
+        const expected = {
+            T: 104,
+            ...cmd,
+            t: 3.1415926,
+            spd: 0,
+        }
+
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(expected) },
+                },
+            },
+            'Should execute moveTo command!'
+        )
+    }
+
     private static async executeCommand(shouldReset = true) {
         const cmd = {
             T: 1,
