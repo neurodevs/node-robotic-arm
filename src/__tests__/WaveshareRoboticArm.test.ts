@@ -139,13 +139,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async moveToCommandCallsAxios() {
-        const cmd = {
-            x: Math.random(),
-            y: Math.random(),
-            z: Math.random(),
-        }
-
-        await this.instance.moveTo(cmd)
+        const cmd = await this.moveToRandom()
 
         const expected = {
             T: 104,
@@ -166,6 +160,27 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async moveToAcceptsOptionalParams() {
+        const cmd = await this.moveToRandom(true)
+
+        const expected = {
+            T: 104,
+            ...cmd,
+        }
+
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(expected) },
+                },
+            },
+            'Should execute moveTo command with optional params!'
+        )
+    }
+
     private static async executeCommand(shouldReset = true) {
         const cmd = {
             T: 1,
@@ -180,6 +195,23 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         await this.instance.executeCommand(cmd, shouldReset)
 
         return cmd
+    }
+
+    private static async moveToRandom(includeOptional = false) {
+        const cmd = this.generateCartesianCommand(includeOptional)
+        await this.instance.moveTo(cmd)
+        return cmd
+    }
+
+    private static generateCartesianCommand(includeOptional = false) {
+        const xyz = {
+            x: Math.random(),
+            y: Math.random(),
+            z: Math.random(),
+        }
+        return includeOptional
+            ? { ...xyz, t: Math.random(), spd: Math.random() }
+            : xyz
     }
 
     private static assertResetToVertical(callToGet = this.secondCallToGet) {
