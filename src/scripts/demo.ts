@@ -5,8 +5,8 @@ async function main() {
 
     await instance.moveTo({ x: 200, y: 0, z: -50, spd: 0.25 })
     await instance.moveTo({ x: 250, y: 0, z: -50, spd: 0.1 })
-    await instance.moveTo({ x: 250, y: 0, z: -40, spd: 0.25 })
-    await instance.moveTo({ x: 200, y: 0, z: -45, spd: 0.25 })
+    await instance.moveTo({ x: 250, y: 0, z: -20, spd: 0.25 })
+    await instance.moveTo({ x: 200, y: 0, z: -20, spd: 0.25 })
 }
 
 main().catch((error) => {
