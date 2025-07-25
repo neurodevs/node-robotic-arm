@@ -3,7 +3,7 @@ import axios, { AxiosResponse } from 'axios'
 export default class WaveshareRoboticArm implements RoboticArm {
     public static Class?: RoboticArmConstructor
     public static axios = axios
-    public static waitAfterMs = 2000
+
     private static defaultIpAddress = '192.168.4.1'
     private static defaultTimeoutMs = 5000
 
@@ -32,8 +32,15 @@ export default class WaveshareRoboticArm implements RoboticArm {
         })
     }
 
-    public async executeCommand(cmd: ExecutableCommand, shouldReset = true) {
-        const response = await this.executeCommandWithoutReset(cmd)
+    public async executeCommand(
+        cmd: ExecutableCommand,
+        options?: ExecuteOptions
+    ) {
+        const { shouldReset = true, waitAfterMs } = options ?? {}
+
+        const response = await this.executeCommandWithoutReset(cmd, {
+            waitAfterMs,
+        })
 
         if (shouldReset) {
             await this.resetToVertical()
@@ -42,20 +49,21 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return response
     }
 
-    private async executeCommandWithoutReset(cmd: ExecutableCommand) {
+    private async executeCommandWithoutReset(
+        cmd: ExecutableCommand,
+        options?: ExecuteOptions
+    ) {
+        const { waitAfterMs } = options ?? {}
+
         const response = await this.axios.get(`http://${this.ipAddress}/js`, {
             params: {
                 json: JSON.stringify(cmd),
             },
         })
 
-        await this.waitAfterCommand()
+        await new Promise((resolve) => setTimeout(resolve, waitAfterMs))
 
         return response
-    }
-
-    private waitAfterCommand() {
-        return new Promise((resolve) => setTimeout(resolve, this.waitAfterMs))
     }
 
     public async moveTo(cmd: MoveCommand) {
@@ -90,16 +98,12 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private get axios() {
         return WaveshareRoboticArm.axios
     }
-
-    private get waitAfterMs() {
-        return WaveshareRoboticArm.waitAfterMs
-    }
 }
 
 export interface RoboticArm {
     executeCommand(
         cmd: ExecutableCommand,
-        shouldReset?: boolean
+        options?: ExecuteOptions
     ): Promise<AxiosResponse>
 
     moveTo(cmd: MoveCommand): Promise<AxiosResponse>
@@ -139,4 +143,9 @@ export interface JointsCommand {
     hand: number
     spd: number
     acc: number
+}
+
+export interface ExecuteOptions {
+    shouldReset?: boolean
+    waitAfterMs?: number
 }

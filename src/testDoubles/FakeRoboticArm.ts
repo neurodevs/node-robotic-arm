@@ -1,6 +1,7 @@
 import { AxiosResponse } from 'axios'
 import {
     ExecutableCommand,
+    ExecuteOptions,
     MoveCommand,
     RoboticArm,
     RoboticArmOptions,
@@ -17,8 +18,13 @@ export default class FakeRoboticArm implements RoboticArm {
         return new FakeRoboticArm()
     }
 
-    public async executeCommand(cmd: ExecutableCommand, shouldReset = true) {
-        FakeRoboticArm.callsToExecuteCommand.push({ cmd, shouldReset })
+    public async executeCommand(
+        cmd: ExecutableCommand,
+        options?: ExecuteOptions
+    ) {
+        const { shouldReset = true } = options ?? {}
+
+        FakeRoboticArm.callsToExecuteCommand.push({ cmd, options })
 
         if (shouldReset) {
             await this.resetToVertical()
@@ -40,5 +46,5 @@ export default class FakeRoboticArm implements RoboticArm {
 
 export interface RoboticArmMoveToCall {
     cmd: ExecutableCommand
-    shouldReset: boolean
+    options?: ExecuteOptions
 }

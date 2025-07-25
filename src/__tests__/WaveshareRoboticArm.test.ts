@@ -14,16 +14,6 @@ import FakeAxios from '../testDoubles/FakeAxios'
 export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static instance: RoboticArm
 
-    protected static async beforeAll() {
-        await super.beforeAll()
-
-        assert.isEqual(
-            WaveshareRoboticArm.waitAfterMs,
-            2000,
-            'Should have default waitAfterMs of 5000ms!'
-        )
-    }
-
     protected static async beforeEach() {
         await super.beforeEach()
 
@@ -192,7 +182,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             acc: 7,
         }
 
-        await this.instance.executeCommand(cmd, shouldReset)
+        await this.instance.executeCommand(cmd, { shouldReset })
 
         return cmd
     }
@@ -263,7 +253,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     private static WaveshareRoboticArm(options?: RoboticArmOptions) {
-        WaveshareRoboticArm.waitAfterMs = this.waitAfterMs
         return WaveshareRoboticArm.Create(options)
     }
 }
