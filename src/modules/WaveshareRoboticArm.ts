@@ -38,19 +38,6 @@ export default class WaveshareRoboticArm implements RoboticArm {
     ) {
         const { waitAfterMs } = options ?? {}
 
-        const response = await this.executeCommandWithoutReset(cmd, {
-            waitAfterMs,
-        })
-
-        return response
-    }
-
-    private async executeCommandWithoutReset(
-        cmd: ExecutableCommand,
-        options?: ExecuteOptions
-    ) {
-        const { waitAfterMs } = options ?? {}
-
         const response = await this.axios.get(`http://${this.ipAddress}/js`, {
             params: {
                 json: JSON.stringify(cmd),
@@ -65,7 +52,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     public async moveTo(cmd: MoveCommand) {
         const { x, y, z, t = this.pi, spd = 0 } = cmd
 
-        return await this.executeCommandWithoutReset({
+        return await this.executeCommand({
             T: 104,
             x,
             y,
@@ -76,7 +63,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async resetToVertical() {
-        return await this.executeCommandWithoutReset({
+        return await this.executeCommand({
             T: 102,
             base: 0,
             shoulder: 0,
