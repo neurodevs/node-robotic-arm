@@ -36,15 +36,11 @@ export default class WaveshareRoboticArm implements RoboticArm {
         cmd: ExecutableCommand,
         options?: ExecuteOptions
     ) {
-        const { shouldReset = true, waitAfterMs } = options ?? {}
+        const { waitAfterMs } = options ?? {}
 
         const response = await this.executeCommandWithoutReset(cmd, {
             waitAfterMs,
         })
-
-        if (shouldReset) {
-            await this.resetToVertical()
-        }
 
         return response
     }
@@ -146,6 +142,5 @@ export interface JointsCommand {
 }
 
 export interface ExecuteOptions {
-    shouldReset?: boolean
     waitAfterMs?: number
 }

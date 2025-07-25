@@ -98,12 +98,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     @test()
-    protected static async executeCommandReturnsToVerticalAtEnd() {
-        await this.executeCommand()
-        this.assertResetToVertical(this.thirdCallToGet)
-    }
-
-    @test()
     protected static async waitsAfterExecutingCommand() {
         const t0 = Date.now()
         await this.executeCommand()
@@ -112,18 +106,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         assert.isTrue(
             elapsed >= this.waitAfterMs,
             `Should have waited at least ${this.waitAfterMs}ms, but only waited ${elapsed}ms!`
-        )
-    }
-
-    @test()
-    protected static async executeCommandHasShouldResetFlag() {
-        await this.executeCommand(false)
-
-        const length = FakeAxios.callsToGet.length
-
-        assert.isTrue(
-            length == 2,
-            `Should have called axios twice, yet was ${length}!`
         )
     }
 
@@ -171,7 +153,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
-    private static async executeCommand(shouldReset = true) {
+    private static async executeCommand() {
         const cmd = {
             T: 1,
             base: 2,
@@ -182,7 +164,9 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             acc: 7,
         }
 
-        await this.instance.executeCommand(cmd, { shouldReset })
+        await this.instance.executeCommand(cmd, {
+            waitAfterMs: this.waitAfterMs,
+        })
 
         return cmd
     }
@@ -232,15 +216,11 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return FakeAxios.callsToGet[1]
     }
 
-    private static get thirdCallToGet() {
-        return FakeAxios.callsToGet[2]
-    }
-
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
 
-    private static readonly waitAfterMs = 2
+    private static readonly waitAfterMs = 5
 
     private static resetToVerticalCommand: ExecutableCommand = {
         T: 102,

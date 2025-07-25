@@ -22,14 +22,7 @@ export default class FakeRoboticArm implements RoboticArm {
         cmd: ExecutableCommand,
         options?: ExecuteOptions
     ) {
-        const { shouldReset = true } = options ?? {}
-
         FakeRoboticArm.callsToExecuteCommand.push({ cmd, options })
-
-        if (shouldReset) {
-            await this.resetToVertical()
-        }
-
         return {} as Promise<AxiosResponse>
     }
 
