@@ -114,7 +114,9 @@ export interface RoboticArmOptions {
 
 export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
-export type RoboticArmConstructor = new () => RoboticArm
+export type RoboticArmConstructor = new (
+    options?: RoboticArmOptions
+) => RoboticArm
 
 export type ExecutableCommand = CommandCode & (MoveCommand | JointsCommand)
 
