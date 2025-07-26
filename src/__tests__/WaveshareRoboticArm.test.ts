@@ -7,6 +7,7 @@ import axios, { AxiosResponse } from 'axios'
 import WaveshareRoboticArm, {
     ExecutableCommand,
     ExecuteOptions,
+    JointsCommand,
     MoveCommand,
     RoboticArm,
     RoboticArmOptions,
@@ -221,6 +222,27 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
                 },
             },
             'Should execute jointsTo command with optional params!'
+        )
+    }
+
+    @test()
+    protected static async jointsToPassesOptionsToExecuteCommand() {
+        let passedOptions: ExecuteOptions | undefined
+
+        this.instance.executeCommand = async (
+            _cmd: ExecutableCommand,
+            options?: ExecuteOptions
+        ) => {
+            passedOptions = options
+            return {} as AxiosResponse
+        }
+
+        await this.instance.jointsTo({} as JointsCommand, this.executeOptions)
+
+        assert.isEqualDeep(
+            passedOptions,
+            this.executeOptions,
+            'Should execute jointsTo command with options!'
         )
     }
 
