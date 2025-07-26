@@ -5,7 +5,6 @@ export default class WaveshareRoboticArm implements RoboticArm {
     public static axios = axios
 
     private static defaultIpAddress = '192.168.4.1'
-    private static defaultTimeoutMs = 5000
 
     private ipAddress: string
     private pi = 3.1415926
@@ -22,10 +21,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     private static async assertIsReachable(options?: RoboticArmOptions) {
-        const {
-            ipAddress = this.defaultIpAddress,
-            timeoutMs = this.defaultTimeoutMs,
-        } = options ?? {}
+        const { ipAddress = this.defaultIpAddress, timeoutMs } = options ?? {}
 
         await this.axios.get(`http://${ipAddress}`, {
             timeout: timeoutMs,

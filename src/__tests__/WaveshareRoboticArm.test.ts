@@ -45,7 +45,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     protected static async assertIpAddressTakesTimeoutMs() {
         assert.isEqual(
             this.firstCallToGet.config.timeout,
-            5000,
+            this.defaultTimeoutMs,
             'Should have set a timeout of 5000ms'
         )
     }
@@ -351,6 +351,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
+    private static readonly defaultTimeoutMs = Math.random()
     private static readonly waitAfterMs = 5
 
     private static resetToVerticalCommand: ExecuteOptions = {
@@ -364,6 +365,9 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     private static WaveshareRoboticArm(options?: RoboticArmOptions) {
-        return WaveshareRoboticArm.Create(options)
+        return WaveshareRoboticArm.Create({
+            timeoutMs: this.defaultTimeoutMs,
+            ...options,
+        })
     }
 }
