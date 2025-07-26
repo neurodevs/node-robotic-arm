@@ -3,9 +3,11 @@ import AbstractSpruceTest, {
     assert,
     generateId,
 } from '@sprucelabs/test-utils'
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import WaveshareRoboticArm, {
     ExecutableCommand,
+    ExecuteOptions,
+    MoveCommand,
     RoboticArm,
     RoboticArmOptions,
 } from '../modules/WaveshareRoboticArm'
@@ -19,6 +21,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         await super.beforeEach()
 
         this.setFakeAxios()
+
+        delete WaveshareRoboticArm.Class
 
         this.instance = await this.WaveshareRoboticArm()
     }
@@ -155,6 +159,27 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     @test()
+    protected static async moveToPassesOptionsToExecuteCommand() {
+        let passedOptions: ExecuteOptions | undefined
+
+        this.instance.executeCommand = async (
+            _cmd: ExecutableCommand,
+            options?: ExecuteOptions
+        ) => {
+            passedOptions = options
+            return {} as AxiosResponse
+        }
+
+        await this.instance.moveTo({} as MoveCommand, this.executeOptions)
+
+        assert.isEqualDeep(
+            passedOptions,
+            this.executeOptions,
+            'Should execute moveTo command with options!'
+        )
+    }
+
+    @test()
     protected static async jointsToCommandCallsAxios() {
         const cmd = await this.jointsToRandom()
 
@@ -210,16 +235,21 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             acc: 7,
         }
 
-        await this.instance.executeCommand(cmd, {
-            waitAfterMs: this.waitAfterMs,
-        })
+        await this.instance.executeCommand(cmd, this.executeOptions)
 
         return cmd
     }
 
-    private static async moveToRandom(includeOptional = false) {
+    private static async moveTo(cmd: MoveCommand, options?: ExecuteOptions) {
+        await this.instance.moveTo(cmd, options)
+    }
+
+    private static async moveToRandom(
+        includeOptional = false,
+        options?: ExecuteOptions
+    ) {
         const cmd = this.generateMoveCommand(includeOptional)
-        await this.instance.moveTo(cmd)
+        await this.moveTo(cmd, options)
         return cmd
     }
 
@@ -290,6 +320,10 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly jsUrl = `${this.baseUrl}/js`
 
     private static readonly waitAfterMs = 5
+
+    private static readonly executeOptions = {
+        waitAfterMs: this.waitAfterMs,
+    }
 
     private static resetToVerticalCommand: ExecutableCommand = {
         T: 102,
