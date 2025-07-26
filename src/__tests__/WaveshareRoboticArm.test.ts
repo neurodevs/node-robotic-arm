@@ -174,7 +174,28 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
                     params: { json: JSON.stringify(expected) },
                 },
             },
-            'Should execute moveTo command!'
+            'Should execute jointsTo command!'
+        )
+    }
+
+    @test()
+    protected static async jointsToAcceptsOptionalParams() {
+        const cmd = await this.jointsToRandom(true)
+
+        const expected = {
+            T: 102,
+            ...cmd,
+        }
+
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(expected) },
+                },
+            },
+            'Should execute jointsTo command with optional params!'
         )
     }
 
