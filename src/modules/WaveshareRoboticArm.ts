@@ -43,7 +43,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async moveTo(options: MoveOptions) {
-        const { x, y, z, t = this.pi, spd = 0 } = options
+        const { x, y, z, t = this.pi, spd = 0, waitAfterMs } = options
 
         return await this.executeCommand({
             T: 104,
@@ -52,6 +52,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
             z,
             t,
             spd,
+            waitAfterMs,
         })
     }
 
@@ -100,6 +101,10 @@ export interface RoboticArm {
     resetToVertical(): Promise<AxiosResponse>
 }
 
+export type RoboticArmConstructor = new (
+    options?: RoboticArmOptions
+) => RoboticArm
+
 export interface RoboticArmOptions {
     ipAddress?: string
     timeoutMs?: number
@@ -107,14 +112,10 @@ export interface RoboticArmOptions {
 
 export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
-export type RoboticArmConstructor = new (
-    options?: RoboticArmOptions
-) => RoboticArm
+export type ExecuteOptions = BaseOptions & (MoveOptions | JointsOptions)
 
-export type ExecuteOptions = CommandCode & (MoveOptions | JointsOptions)
-
-export interface CommandCode {
-    T: number
+export interface BaseOptions {
+    T: WaveshareCommandCode
 }
 
 export interface MoveOptions {
@@ -136,4 +137,5 @@ export interface JointsOptions {
     waitAfterMs?: number
 }
 
+export type WaveshareCommandCode = number
 export type Radians = number

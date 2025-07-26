@@ -185,6 +185,18 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     @test()
+    protected static async moveToWaitsAfterExecutingCommand() {
+        const t0 = Date.now()
+        await this.moveToRandom(false, true)
+        const elapsed = Date.now() - t0
+
+        assert.isTrue(
+            elapsed >= this.waitAfterMs,
+            `Should have waited at least ${this.waitAfterMs}ms, but only waited ${elapsed}ms!`
+        )
+    }
+
+    @test()
     protected static async jointsToCommandCallsAxios() {
         const options = await this.jointsToRandom()
 
@@ -274,11 +286,16 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     private static async moveToRandom(
         includeOptional = false,
-        options?: ExecuteOptions
+        waitAfter = false
     ) {
-        const cmd = this.generateMoveOptions(includeOptional)
-        await this.moveTo({ ...cmd, ...options })
-        return cmd
+        const options = this.generateMoveOptions(includeOptional)
+
+        await this.moveTo({
+            ...options,
+            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
+        })
+
+        return options
     }
 
     private static generateMoveOptions(includeOptional = false) {
