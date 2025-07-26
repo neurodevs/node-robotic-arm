@@ -2,6 +2,7 @@ import { AxiosResponse } from 'axios'
 import {
     ExecutableCommand,
     ExecuteOptions,
+    JointsCommand,
     MoveCommand,
     RoboticArm,
     RoboticArmOptions,
@@ -10,6 +11,7 @@ import {
 export default class FakeRoboticArm implements RoboticArm {
     public static callsToConstructor: RoboticArmOptions[] = []
     public static callsToExecuteCommand: RoboticArmMoveToCall[] = []
+    public static callsToJointsTo: JointsCommand[] = []
     public static callsToMoveTo: MoveCommand[] = []
     public static numCallsToResetToVertical = 0
 
@@ -28,6 +30,11 @@ export default class FakeRoboticArm implements RoboticArm {
 
     public async moveTo(cmd: MoveCommand) {
         FakeRoboticArm.callsToMoveTo.push(cmd)
+        return {} as Promise<AxiosResponse>
+    }
+
+    public async jointsTo(cmd: JointsCommand) {
+        FakeRoboticArm.callsToJointsTo.push(cmd)
         return {} as Promise<AxiosResponse>
     }
 

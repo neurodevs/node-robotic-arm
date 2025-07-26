@@ -13,6 +13,7 @@ import FakeAxios from '../testDoubles/FakeAxios'
 
 export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static instance: RoboticArm
+    private static readonly pi = 3.1415926
 
     protected static async beforeEach() {
         await super.beforeEach()
@@ -153,6 +154,30 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async jointsToCommandCallsAxios() {
+        const cmd = await this.jointsToRandom()
+
+        const expected = {
+            T: 102,
+            ...cmd,
+            hand: this.pi,
+            spd: 0,
+            acc: 0,
+        }
+
+        assert.isEqualDeep(
+            this.secondCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: { json: JSON.stringify(expected) },
+                },
+            },
+            'Should execute moveTo command!'
+        )
+    }
+
     private static async executeCommand() {
         const cmd = {
             T: 1,
@@ -172,12 +197,12 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     private static async moveToRandom(includeOptional = false) {
-        const cmd = this.generateCartesianCommand(includeOptional)
+        const cmd = this.generateMoveCommand(includeOptional)
         await this.instance.moveTo(cmd)
         return cmd
     }
 
-    private static generateCartesianCommand(includeOptional = false) {
+    private static generateMoveCommand(includeOptional = false) {
         const xyz = {
             x: Math.random(),
             y: Math.random(),
@@ -186,6 +211,29 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return includeOptional
             ? { ...xyz, t: Math.random(), spd: Math.random() }
             : xyz
+    }
+
+    private static async jointsToRandom(includeOptional = false) {
+        const cmd = this.generateJointsCommand(includeOptional)
+        await this.instance.jointsTo(cmd)
+        return cmd
+    }
+
+    private static generateJointsCommand(includeOptional = false) {
+        const required = {
+            base: Math.random(),
+            shoulder: Math.random(),
+            elbow: Math.random(),
+        }
+
+        return includeOptional
+            ? {
+                  ...required,
+                  hand: Math.random(),
+                  spd: Math.random(),
+                  acc: Math.random(),
+              }
+            : required
     }
 
     private static assertResetToVertical(callToGet = this.secondCallToGet) {

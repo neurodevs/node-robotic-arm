@@ -62,6 +62,20 @@ export default class WaveshareRoboticArm implements RoboticArm {
         })
     }
 
+    public async jointsTo(cmd: JointsCommand) {
+        const { base, shoulder, elbow, hand = this.pi, spd = 0, acc = 0 } = cmd
+
+        return await this.executeCommand({
+            T: 102,
+            base,
+            shoulder,
+            elbow,
+            hand,
+            spd,
+            acc,
+        })
+    }
+
     public async resetToVertical() {
         return await this.executeCommand({
             T: 102,
@@ -88,6 +102,8 @@ export interface RoboticArm {
         cmd: ExecutableCommand,
         options?: ExecuteOptions
     ): Promise<AxiosResponse>
+
+    jointsTo(cmd: JointsCommand): Promise<AxiosResponse>
 
     moveTo(cmd: MoveCommand): Promise<AxiosResponse>
 
@@ -123,9 +139,9 @@ export interface JointsCommand {
     base: number
     shoulder: number
     elbow: number
-    hand: number
-    spd: number
-    acc: number
+    hand?: number
+    spd?: number
+    acc?: number
 }
 
 export interface ExecuteOptions {
