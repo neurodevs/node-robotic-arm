@@ -64,6 +64,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
             hand = this.pi,
             spd = 0,
             acc = 0,
+            waitAfterMs,
         } = options
 
         return await this.executeCommand({
@@ -74,6 +75,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
             hand,
             spd,
             acc,
+            waitAfterMs,
         })
     }
 

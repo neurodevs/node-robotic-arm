@@ -119,7 +119,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async moveToCommandCallsAxios() {
-        const options = await this.moveToRandom()
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { waitAfterMs, ...options } = await this.moveToRandom()
 
         const expected = {
             T: 104,
@@ -142,7 +143,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async moveToAcceptsOptionalParams() {
-        const options = await this.moveToRandom(true)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { waitAfterMs, ...options } = await this.moveToRandom(true)
 
         const expected = {
             T: 104,
@@ -175,7 +177,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         await this.moveTo(options)
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { T, waitAfterMs, ...rest } = passedOptions ?? {}
+        const { T, ...rest } = passedOptions ?? {}
 
         assert.isEqualDeep(
             rest,
@@ -198,7 +200,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async jointsToCommandCallsAxios() {
-        const options = await this.jointsToRandom()
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { waitAfterMs, ...options } = await this.jointsToRandom()
 
         const expected = {
             T: 102,
@@ -222,7 +225,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async jointsToAcceptsOptionalParams() {
-        const options = await this.jointsToRandom(true)
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { waitAfterMs, ...options } = await this.jointsToRandom(true)
 
         const expected = {
             T: 102,
@@ -254,12 +258,24 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         await this.instance.jointsTo(options)
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { T, waitAfterMs, ...rest } = passedOptions ?? {}
+        const { T, ...rest } = passedOptions ?? {}
 
         assert.isEqualDeep(
             rest,
             options,
             'Should execute jointsTo command with options!'
+        )
+    }
+
+    @test()
+    protected static async jointsToWaitsAfterExecutingCommand() {
+        const t0 = Date.now()
+        await this.jointsToRandom(false, true)
+        const elapsed = Date.now() - t0
+
+        assert.isTrue(
+            elapsed >= this.waitAfterMs,
+            `Should have waited at least ${this.waitAfterMs}ms, but only waited ${elapsed}ms!`
         )
     }
 
@@ -298,41 +314,57 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return options
     }
 
-    private static generateMoveOptions(includeOptional = false) {
-        const required = {
+    private static generateMoveOptions(
+        includeOptional = false,
+        waitAfter = false
+    ) {
+        const base = {
             x: Math.random(),
             y: Math.random(),
             z: Math.random(),
+            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
         }
 
         const options = includeOptional
-            ? { ...required, t: Math.random(), spd: Math.random() }
-            : required
+            ? { ...base, t: Math.random(), spd: Math.random() }
+            : base
 
         return options as MoveOptions
     }
 
-    private static async jointsToRandom(includeOptional = false) {
+    private static async jointsToRandom(
+        includeOptional = false,
+        waitAfter = false
+    ) {
         const options = this.generateJointsOptions(includeOptional)
-        await this.instance.jointsTo(options)
+
+        await this.instance.jointsTo({
+            ...options,
+            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
+        })
+
         return options
     }
 
-    private static generateJointsOptions(includeOptional = false) {
-        const required = {
+    private static generateJointsOptions(
+        includeOptional = false,
+        waitAfter = false
+    ) {
+        const base = {
             base: Math.random(),
             shoulder: Math.random(),
             elbow: Math.random(),
+            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
         }
 
         const options = includeOptional
             ? {
-                  ...required,
+                  ...base,
                   hand: Math.random(),
                   spd: Math.random(),
                   acc: Math.random(),
               }
-            : required
+            : base
 
         return options as JointsOptions
     }
