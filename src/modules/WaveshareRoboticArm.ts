@@ -125,17 +125,19 @@ export interface MoveOptions {
     x: number
     y: number
     z: number
-    t?: number
+    t?: Radians
     spd?: number
     waitAfterMs?: number
 }
 
 export interface JointsOptions {
-    base: number
-    shoulder: number
-    elbow: number
-    hand?: number
+    base: Radians
+    shoulder: Radians
+    elbow: Radians
+    hand?: Radians
     spd?: number
     acc?: number
     waitAfterMs?: number
 }
+
+export type Radians = number
