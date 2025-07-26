@@ -77,14 +77,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async resetToVertical() {
-        return await this.executeCommand({
-            T: 102,
+        return await this.jointsTo({
             base: 0,
             shoulder: 0,
             elbow: 0,
-            hand: this.pi,
-            spd: 0,
-            acc: 0,
         })
     }
 
