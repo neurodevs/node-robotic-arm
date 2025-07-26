@@ -1,18 +1,17 @@
 import { AxiosResponse } from 'axios'
 import {
-    ExecutableCommand,
     ExecuteOptions,
-    JointsCommand,
-    MoveCommand,
+    JointsOptions,
+    MoveOptions,
     RoboticArm,
     RoboticArmOptions,
 } from '../modules/WaveshareRoboticArm'
 
 export default class FakeRoboticArm implements RoboticArm {
     public static callsToConstructor: RoboticArmOptions[] = []
-    public static callsToExecuteCommand: RoboticArmMoveToCall[] = []
-    public static callsToJointsTo: JointsCommand[] = []
-    public static callsToMoveTo: MoveCommand[] = []
+    public static callsToExecuteCommand: ExecuteOptions[] = []
+    public static callsToJointsTo: JointsOptions[] = []
+    public static callsToMoveTo: MoveOptions[] = []
     public static numCallsToResetToVertical = 0
 
     public constructor(options?: RoboticArmOptions) {
@@ -20,21 +19,18 @@ export default class FakeRoboticArm implements RoboticArm {
         return new FakeRoboticArm()
     }
 
-    public async executeCommand(
-        cmd: ExecutableCommand,
-        options?: ExecuteOptions
-    ) {
-        FakeRoboticArm.callsToExecuteCommand.push({ cmd, options })
+    public async executeCommand(options: ExecuteOptions) {
+        FakeRoboticArm.callsToExecuteCommand.push(options)
         return {} as Promise<AxiosResponse>
     }
 
-    public async moveTo(cmd: MoveCommand) {
-        FakeRoboticArm.callsToMoveTo.push(cmd)
+    public async moveTo(options: MoveOptions) {
+        FakeRoboticArm.callsToMoveTo.push(options)
         return {} as Promise<AxiosResponse>
     }
 
-    public async jointsTo(cmd: JointsCommand) {
-        FakeRoboticArm.callsToJointsTo.push(cmd)
+    public async jointsTo(options: JointsOptions) {
+        FakeRoboticArm.callsToJointsTo.push(options)
         return {} as Promise<AxiosResponse>
     }
 
@@ -42,9 +38,12 @@ export default class FakeRoboticArm implements RoboticArm {
         FakeRoboticArm.numCallsToResetToVertical++
         return {} as Promise<AxiosResponse>
     }
-}
 
-export interface RoboticArmMoveToCall {
-    cmd: ExecutableCommand
-    options?: ExecuteOptions
+    public static resetTestDouble() {
+        this.callsToConstructor = []
+        this.callsToExecuteCommand = []
+        this.callsToJointsTo = []
+        this.callsToMoveTo = []
+        this.numCallsToResetToVertical = 0
+    }
 }

@@ -32,11 +32,8 @@ export default class WaveshareRoboticArm implements RoboticArm {
         })
     }
 
-    public async executeCommand(
-        cmd: ExecutableCommand,
-        options?: ExecuteOptions
-    ) {
-        const { waitAfterMs } = options ?? {}
+    public async executeCommand(options: ExecuteOptions) {
+        const { waitAfterMs, ...cmd } = options ?? {}
 
         const response = await this.axios.get(`http://${this.ipAddress}/js`, {
             params: {
@@ -49,37 +46,38 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return response
     }
 
-    public async moveTo(cmd: MoveCommand, options?: ExecuteOptions) {
-        const { x, y, z, t = this.pi, spd = 0 } = cmd
+    public async moveTo(options: MoveOptions) {
+        const { x, y, z, t = this.pi, spd = 0 } = options
 
-        return await this.executeCommand(
-            {
-                T: 104,
-                x,
-                y,
-                z,
-                t,
-                spd,
-            },
-            options
-        )
+        return await this.executeCommand({
+            T: 104,
+            x,
+            y,
+            z,
+            t,
+            spd,
+        })
     }
 
-    public async jointsTo(cmd: JointsCommand, options?: ExecuteOptions) {
-        const { base, shoulder, elbow, hand = this.pi, spd = 0, acc = 0 } = cmd
+    public async jointsTo(options: JointsOptions) {
+        const {
+            base,
+            shoulder,
+            elbow,
+            hand = this.pi,
+            spd = 0,
+            acc = 0,
+        } = options
 
-        return await this.executeCommand(
-            {
-                T: 102,
-                base,
-                shoulder,
-                elbow,
-                hand,
-                spd,
-                acc,
-            },
-            options
-        )
+        return await this.executeCommand({
+            T: 102,
+            base,
+            shoulder,
+            elbow,
+            hand,
+            spd,
+            acc,
+        })
     }
 
     public async resetToVertical() {
@@ -100,18 +98,9 @@ export default class WaveshareRoboticArm implements RoboticArm {
 }
 
 export interface RoboticArm {
-    executeCommand(
-        cmd: ExecutableCommand,
-        options?: ExecuteOptions
-    ): Promise<AxiosResponse>
-
-    jointsTo(
-        cmd: JointsCommand,
-        options?: ExecuteOptions
-    ): Promise<AxiosResponse>
-
-    moveTo(cmd: MoveCommand, options?: ExecuteOptions): Promise<AxiosResponse>
-
+    executeCommand(options: ExecuteOptions): Promise<AxiosResponse>
+    jointsTo(options: JointsOptions): Promise<AxiosResponse>
+    moveTo(options: MoveOptions): Promise<AxiosResponse>
     resetToVertical(): Promise<AxiosResponse>
 }
 
@@ -126,29 +115,27 @@ export type RoboticArmConstructor = new (
     options?: RoboticArmOptions
 ) => RoboticArm
 
-export type ExecutableCommand = CommandCode & (MoveCommand | JointsCommand)
+export type ExecuteOptions = CommandCode & (MoveOptions | JointsOptions)
 
 export interface CommandCode {
     T: number
 }
 
-export interface MoveCommand {
+export interface MoveOptions {
     x: number
     y: number
     z: number
     t?: number
     spd?: number
+    waitAfterMs?: number
 }
 
-export interface JointsCommand {
+export interface JointsOptions {
     base: number
     shoulder: number
     elbow: number
     hand?: number
     spd?: number
     acc?: number
-}
-
-export interface ExecuteOptions {
     waitAfterMs?: number
 }

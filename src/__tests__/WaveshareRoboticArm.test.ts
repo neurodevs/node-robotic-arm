@@ -5,10 +5,9 @@ import AbstractSpruceTest, {
 } from '@sprucelabs/test-utils'
 import axios, { AxiosResponse } from 'axios'
 import WaveshareRoboticArm, {
-    ExecutableCommand,
     ExecuteOptions,
-    JointsCommand,
-    MoveCommand,
+    JointsOptions,
+    MoveOptions,
     RoboticArm,
     RoboticArmOptions,
 } from '../modules/WaveshareRoboticArm'
@@ -89,14 +88,17 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async hasMethodExecuteCommand() {
-        const cmd = await this.executeCommand()
+        const options = await this.executeCommand()
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { waitAfterMs, ...rest } = options
 
         assert.isEqualDeep(
             this.secondCallToGet,
             {
                 url: this.jsUrl,
                 config: {
-                    params: { json: JSON.stringify(cmd) },
+                    params: { json: JSON.stringify(rest) },
                 },
             },
             'Should execute command!'
@@ -117,11 +119,11 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async moveToCommandCallsAxios() {
-        const cmd = await this.moveToRandom()
+        const options = await this.moveToRandom()
 
         const expected = {
             T: 104,
-            ...cmd,
+            ...options,
             t: 3.1415926,
             spd: 0,
         }
@@ -140,11 +142,11 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async moveToAcceptsOptionalParams() {
-        const cmd = await this.moveToRandom(true)
+        const options = await this.moveToRandom(true)
 
         const expected = {
             T: 104,
-            ...cmd,
+            ...options,
         }
 
         assert.isEqualDeep(
@@ -163,30 +165,32 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     protected static async moveToPassesOptionsToExecuteCommand() {
         let passedOptions: ExecuteOptions | undefined
 
-        this.instance.executeCommand = async (
-            _cmd: ExecutableCommand,
-            options?: ExecuteOptions
-        ) => {
+        this.instance.executeCommand = async (options: ExecuteOptions) => {
             passedOptions = options
             return {} as AxiosResponse
         }
 
-        await this.instance.moveTo({} as MoveCommand, this.executeOptions)
+        const options = this.generateMoveOptions(true)
+
+        await this.moveTo(options)
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { T, waitAfterMs, ...rest } = passedOptions ?? {}
 
         assert.isEqualDeep(
-            passedOptions,
-            this.executeOptions,
+            rest,
+            options,
             'Should execute moveTo command with options!'
         )
     }
 
     @test()
     protected static async jointsToCommandCallsAxios() {
-        const cmd = await this.jointsToRandom()
+        const options = await this.jointsToRandom()
 
         const expected = {
             T: 102,
-            ...cmd,
+            ...options,
             hand: this.pi,
             spd: 0,
             acc: 0,
@@ -206,11 +210,11 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async jointsToAcceptsOptionalParams() {
-        const cmd = await this.jointsToRandom(true)
+        const options = await this.jointsToRandom(true)
 
         const expected = {
             T: 102,
-            ...cmd,
+            ...options,
         }
 
         assert.isEqualDeep(
@@ -229,25 +233,26 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     protected static async jointsToPassesOptionsToExecuteCommand() {
         let passedOptions: ExecuteOptions | undefined
 
-        this.instance.executeCommand = async (
-            _cmd: ExecutableCommand,
-            options?: ExecuteOptions
-        ) => {
+        this.instance.executeCommand = async (options: ExecuteOptions) => {
             passedOptions = options
             return {} as AxiosResponse
         }
 
-        await this.instance.jointsTo({} as JointsCommand, this.executeOptions)
+        const options = this.generateJointsOptions(true)
+        await this.instance.jointsTo(options)
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { T, waitAfterMs, ...rest } = passedOptions ?? {}
 
         assert.isEqualDeep(
-            passedOptions,
-            this.executeOptions,
+            rest,
+            options,
             'Should execute jointsTo command with options!'
         )
     }
 
     private static async executeCommand() {
-        const cmd = {
+        const options = {
             T: 1,
             base: 2,
             shoulder: 3,
@@ -255,51 +260,55 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             hand: 5,
             spd: 6,
             acc: 7,
+            waitAfterMs: this.waitAfterMs,
         }
 
-        await this.instance.executeCommand(cmd, this.executeOptions)
+        await this.instance.executeCommand(options)
 
-        return cmd
+        return options
     }
 
-    private static async moveTo(cmd: MoveCommand, options?: ExecuteOptions) {
-        await this.instance.moveTo(cmd, options)
+    private static async moveTo(options: MoveOptions) {
+        await this.instance.moveTo(options)
     }
 
     private static async moveToRandom(
         includeOptional = false,
         options?: ExecuteOptions
     ) {
-        const cmd = this.generateMoveCommand(includeOptional)
-        await this.moveTo(cmd, options)
+        const cmd = this.generateMoveOptions(includeOptional)
+        await this.moveTo({ ...cmd, ...options })
         return cmd
     }
 
-    private static generateMoveCommand(includeOptional = false) {
-        const xyz = {
+    private static generateMoveOptions(includeOptional = false) {
+        const required = {
             x: Math.random(),
             y: Math.random(),
             z: Math.random(),
         }
-        return includeOptional
-            ? { ...xyz, t: Math.random(), spd: Math.random() }
-            : xyz
+
+        const options = includeOptional
+            ? { ...required, t: Math.random(), spd: Math.random() }
+            : required
+
+        return options as MoveOptions
     }
 
     private static async jointsToRandom(includeOptional = false) {
-        const cmd = this.generateJointsCommand(includeOptional)
-        await this.instance.jointsTo(cmd)
-        return cmd
+        const options = this.generateJointsOptions(includeOptional)
+        await this.instance.jointsTo(options)
+        return options
     }
 
-    private static generateJointsCommand(includeOptional = false) {
+    private static generateJointsOptions(includeOptional = false) {
         const required = {
             base: Math.random(),
             shoulder: Math.random(),
             elbow: Math.random(),
         }
 
-        return includeOptional
+        const options = includeOptional
             ? {
                   ...required,
                   hand: Math.random(),
@@ -307,6 +316,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
                   acc: Math.random(),
               }
             : required
+
+        return options as JointsOptions
     }
 
     private static assertResetToVertical(callToGet = this.secondCallToGet) {
@@ -340,14 +351,9 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
-
     private static readonly waitAfterMs = 5
 
-    private static readonly executeOptions = {
-        waitAfterMs: this.waitAfterMs,
-    }
-
-    private static resetToVerticalCommand: ExecutableCommand = {
+    private static resetToVerticalCommand: ExecuteOptions = {
         T: 102,
         base: 0,
         shoulder: 0,
