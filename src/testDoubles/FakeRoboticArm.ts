@@ -12,7 +12,7 @@ export default class FakeRoboticArm implements RoboticArm {
     public static callsToExecuteCommand: ExecuteOptions[] = []
     public static callsToJointsTo: JointsOptions[] = []
     public static callsToMoveTo: MoveOptions[] = []
-    public static numCallsToResetToVertical = 0
+    public static numCallsToResetToOrigin = 0
 
     public constructor(options?: RoboticArmOptions) {
         FakeRoboticArm.callsToConstructor.push(options ?? {})
@@ -34,8 +34,8 @@ export default class FakeRoboticArm implements RoboticArm {
         return {} as Promise<AxiosResponse>
     }
 
-    public async resetToVertical() {
-        FakeRoboticArm.numCallsToResetToVertical++
+    public async resetToOrigin() {
+        FakeRoboticArm.numCallsToResetToOrigin++
         return {} as Promise<AxiosResponse>
     }
 
@@ -44,6 +44,6 @@ export default class FakeRoboticArm implements RoboticArm {
         this.callsToExecuteCommand = []
         this.callsToJointsTo = []
         this.callsToMoveTo = []
-        this.numCallsToResetToVertical = 0
+        this.numCallsToResetToOrigin = 0
     }
 }

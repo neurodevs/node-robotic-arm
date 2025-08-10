@@ -81,9 +81,9 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     @test()
-    protected static async hasMethodResetToVertical() {
-        await this.instance.resetToVertical()
-        this.assertResetToVertical()
+    protected static async hasMethodResetToOrigin() {
+        await this.instance.resetToOrigin()
+        this.assertResetToOrigin()
     }
 
     @test()
@@ -369,18 +369,18 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         return options as JointsOptions
     }
 
-    private static assertResetToVertical(callToGet = this.secondCallToGet) {
+    private static assertResetToOrigin(callToGet = this.secondCallToGet) {
         assert.isEqualDeep(
             callToGet,
             {
                 url: this.jsUrl,
                 config: {
                     params: {
-                        json: JSON.stringify(this.resetToVerticalCommand),
+                        json: JSON.stringify(this.resetToOriginCommand),
                     },
                 },
             },
-            'Should reset to vertical!'
+            'Should reset to origin!'
         )
     }
 
@@ -403,7 +403,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly defaultTimeoutMs = Math.random()
     private static readonly waitAfterMs = 5
 
-    private static resetToVerticalCommand: ExecuteOptions = {
+    private static resetToOriginCommand: ExecuteOptions = {
         T: 102,
         base: 0,
         shoulder: 0,

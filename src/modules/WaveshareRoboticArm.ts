@@ -79,7 +79,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
         })
     }
 
-    public async resetToVertical() {
+    public async resetToOrigin() {
         return await this.jointsTo({
             base: 0,
             shoulder: 0,
@@ -100,7 +100,7 @@ export interface RoboticArm {
     executeCommand(options: ExecuteOptions): Promise<AxiosResponse>
     jointsTo(options: JointsOptions): Promise<AxiosResponse>
     moveTo(options: MoveOptions): Promise<AxiosResponse>
-    resetToVertical(): Promise<AxiosResponse>
+    resetToOrigin(): Promise<AxiosResponse>
 }
 
 export type RoboticArmConstructor = new (
