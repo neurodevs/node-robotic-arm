@@ -7,12 +7,14 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private static defaultIpAddress = '192.168.4.1'
 
     private ipAddress: string
+    private origin?: MoveOptions | JointsOptions
     private pi = 3.1415926
 
     protected constructor(options?: RoboticArmOptions) {
-        const { ipAddress } = options ?? {}
+        const { ipAddress, origin } = options ?? {}
 
         this.ipAddress = ipAddress ?? this.defaultIpAddress
+        this.origin = origin
     }
 
     public static async Create(options?: RoboticArmOptions) {
@@ -80,11 +82,15 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     public async resetToOrigin() {
-        return await this.jointsTo({
-            base: 0,
-            shoulder: 0,
-            elbow: 0,
-        })
+        if (this.origin) {
+            return await this.moveTo(this.origin as MoveOptions)
+        } else {
+            return await this.jointsTo({
+                base: 0,
+                shoulder: 0,
+                elbow: 0,
+            })
+        }
     }
 
     private get defaultIpAddress() {
@@ -110,6 +116,7 @@ export type RoboticArmConstructor = new (
 export interface RoboticArmOptions {
     ipAddress?: string
     timeoutMs?: number
+    origin?: MoveOptions | JointsOptions
 }
 
 export type RoboticArmConstructorOptions = Required<RoboticArmOptions>

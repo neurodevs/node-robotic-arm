@@ -279,6 +279,42 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async passedOriginSetsNewOrigin() {
+        await this.instance.resetToOrigin()
+
+        this.assertResetToOrigin(this.secondCallToGet)
+    }
+
+    @test()
+    protected static async originCanBeSetOnInstantiation() {
+        const origin = this.generateMoveOptions()
+
+        this.instance = await this.WaveshareRoboticArm({
+            origin,
+        })
+
+        await this.instance.resetToOrigin()
+
+        assert.isEqualDeep(
+            this.thirdCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: {
+                        json: JSON.stringify({
+                            T: 104,
+                            ...origin,
+                            t: this.pi,
+                            spd: 0,
+                        }),
+                    },
+                },
+            },
+            'Should reset to origin passed on instantiation!'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,
@@ -322,11 +358,15 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             x: Math.random(),
             y: Math.random(),
             z: Math.random(),
-            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
         }
 
         const options = includeOptional
-            ? { ...base, t: Math.random(), spd: Math.random() }
+            ? {
+                  ...base,
+                  t: Math.random(),
+                  spd: Math.random(),
+                  waitAfterMs: waitAfter ? this.waitAfterMs : 0,
+              }
             : base
 
         return options as MoveOptions
@@ -395,6 +435,10 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     private static get secondCallToGet() {
         return FakeAxios.callsToGet[1]
+    }
+
+    private static get thirdCallToGet() {
+        return FakeAxios.callsToGet[2]
     }
 
     private static readonly ipAddress = '192.168.4.1'
