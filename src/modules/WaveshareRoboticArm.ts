@@ -83,7 +83,11 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     public async resetToOrigin() {
         if (this.origin) {
-            return await this.moveTo(this.origin as MoveOptions)
+            if (this.originIsAMoveCommand) {
+                return await this.moveTo(this.origin as MoveOptions)
+            } else {
+                return await this.jointsTo(this.origin as JointsOptions)
+            }
         } else {
             return await this.jointsTo({
                 base: 0,
@@ -91,6 +95,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
                 elbow: 0,
             })
         }
+    }
+
+    private get originIsAMoveCommand() {
+        return 'x' in (this.origin ?? {})
     }
 
     private get defaultIpAddress() {

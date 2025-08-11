@@ -315,6 +315,36 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async originCanBeSetToJointsCommand() {
+        const origin = this.generateJointsOptions()
+
+        this.instance = await this.WaveshareRoboticArm({
+            origin,
+        })
+
+        await this.instance.resetToOrigin()
+
+        assert.isEqualDeep(
+            this.thirdCallToGet,
+            {
+                url: this.jsUrl,
+                config: {
+                    params: {
+                        json: JSON.stringify({
+                            T: 102,
+                            ...origin,
+                            hand: this.pi,
+                            spd: 0,
+                            acc: 0,
+                        }),
+                    },
+                },
+            },
+            'Should reset to origin passed on instantiation!'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,
@@ -394,7 +424,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             base: Math.random(),
             shoulder: Math.random(),
             elbow: Math.random(),
-            waitAfterMs: waitAfter ? this.waitAfterMs : 0,
         }
 
         const options = includeOptional
@@ -403,6 +432,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
                   hand: Math.random(),
                   spd: Math.random(),
                   acc: Math.random(),
+                  waitAfterMs: waitAfter ? this.waitAfterMs : 0,
               }
             : base
 
