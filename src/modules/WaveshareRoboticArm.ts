@@ -90,14 +90,14 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     private async resetToPassedOrigin() {
-        if (this.originIsAMoveCommand) {
+        if (this.originIsMoveCommand) {
             return await this.moveTo(this.origin as MoveOptions)
         } else {
             return await this.jointsTo(this.origin as JointsOptions)
         }
     }
 
-    private get originIsAMoveCommand() {
+    private get originIsMoveCommand() {
         return 'x' in (this.origin ?? {})
     }
 
