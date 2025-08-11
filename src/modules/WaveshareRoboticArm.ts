@@ -83,22 +83,30 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     public async resetToOrigin() {
         if (this.origin) {
-            if (this.originIsAMoveCommand) {
-                return await this.moveTo(this.origin as MoveOptions)
-            } else {
-                return await this.jointsTo(this.origin as JointsOptions)
-            }
+            return await this.resetToPassedOrigin()
         } else {
-            return await this.jointsTo({
-                base: 0,
-                shoulder: 0,
-                elbow: 0,
-            })
+            return await this.resetToDefaultOrigin()
+        }
+    }
+
+    private async resetToPassedOrigin() {
+        if (this.originIsAMoveCommand) {
+            return await this.moveTo(this.origin as MoveOptions)
+        } else {
+            return await this.jointsTo(this.origin as JointsOptions)
         }
     }
 
     private get originIsAMoveCommand() {
         return 'x' in (this.origin ?? {})
+    }
+
+    private async resetToDefaultOrigin() {
+        return await this.jointsTo({
+            base: 0,
+            shoulder: 0,
+            elbow: 0,
+        })
     }
 
     private get defaultIpAddress() {
