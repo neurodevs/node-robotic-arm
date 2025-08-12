@@ -16,7 +16,6 @@ export default class FakeRoboticArm implements RoboticArm {
 
     public constructor(options?: RoboticArmOptions) {
         FakeRoboticArm.callsToConstructor.push(options ?? {})
-        return new FakeRoboticArm()
     }
 
     public async executeCommand(options: ExecuteOptions) {
