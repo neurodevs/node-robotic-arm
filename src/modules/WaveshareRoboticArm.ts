@@ -9,13 +9,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private origin?: MoveOptions | JointsOptions
     private pi = 3.1415926
 
-    private _queue: Promise<unknown> = Promise.resolve()
-
-    private runExclusive<T>(fn: () => Promise<T>) {
-        const run = this._queue.then(fn, fn)
-        this._queue = run.catch(() => {})
-        return run
-    }
+    private queue: Promise<unknown> = Promise.resolve()
 
     protected constructor(options?: RoboticArmOptions) {
         const { ipAddress, origin } = options ?? {}
@@ -107,6 +101,12 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     private get axios() {
         return WaveshareRoboticArm.axios
+    }
+
+    private runExclusive<T>(fn: () => Promise<T>) {
+        const run = this.queue.then(fn, fn)
+        this.queue = run.catch(() => {})
+        return run
     }
 }
 
