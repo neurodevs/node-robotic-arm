@@ -3,12 +3,19 @@ import axios, { AxiosResponse } from 'axios'
 export default class WaveshareRoboticArm implements RoboticArm {
     public static Class?: RoboticArmConstructor
     public static axios = axios
-
     private static defaultIpAddress = '192.168.4.1'
 
     private ipAddress: string
     private origin?: MoveOptions | JointsOptions
     private pi = 3.1415926
+
+    private _queue: Promise<unknown> = Promise.resolve()
+
+    private runExclusive<T>(fn: () => Promise<T>) {
+        const run = this._queue.then(fn, fn)
+        this._queue = run.catch(() => {})
+        return run
+    }
 
     protected constructor(options?: RoboticArmOptions) {
         const { ipAddress, origin } = options ?? {}
@@ -24,38 +31,29 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     private static async assertIsReachable(options?: RoboticArmOptions) {
         const { ipAddress = this.defaultIpAddress, timeoutMs } = options ?? {}
-
-        await this.axios.get(`http://${ipAddress}`, {
-            timeout: timeoutMs,
-        })
+        await this.axios.get(`http://${ipAddress}`, { timeout: timeoutMs })
     }
 
     public async executeCommand(options: ExecuteOptions) {
-        const { waitAfterMs, ...cmd } = options ?? {}
+        const { waitAfterMs = 0, ...cmd } = options ?? {}
 
-        const response = await this.axios.get(`http://${this.ipAddress}/js`, {
-            params: {
-                json: JSON.stringify(cmd),
-            },
+        return this.runExclusive(async () => {
+            const response = await this.axios.get(
+                `http://${this.ipAddress}/js`,
+                {
+                    params: { json: JSON.stringify(cmd) },
+                }
+            )
+            if (waitAfterMs > 0) {
+                await new Promise((r) => setTimeout(r, waitAfterMs))
+            }
+            return response
         })
-
-        await new Promise((resolve) => setTimeout(resolve, waitAfterMs))
-
-        return response
     }
 
     public async moveTo(options: MoveOptions) {
         const { x, y, z, t = this.pi, spd = 0, waitAfterMs } = options
-
-        return await this.executeCommand({
-            T: 104,
-            x,
-            y,
-            z,
-            t,
-            spd,
-            waitAfterMs,
-        })
+        return this.executeCommand({ T: 104, x, y, z, t, spd, waitAfterMs })
     }
 
     public async jointsTo(options: JointsOptions) {
@@ -69,7 +67,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
             waitAfterMs,
         } = options
 
-        return await this.executeCommand({
+        return this.executeCommand({
             T: 102,
             base,
             shoulder,
@@ -83,18 +81,16 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     public async resetToOrigin() {
         if (this.origin) {
-            return await this.resetToPassedOrigin()
-        } else {
-            return await this.resetToDefaultOrigin()
+            return this.resetToPassedOrigin()
         }
+        return this.resetToDefaultOrigin()
     }
 
     private async resetToPassedOrigin() {
         if (this.originIsMoveCommand) {
-            return await this.moveTo(this.origin as MoveOptions)
-        } else {
-            return await this.jointsTo(this.origin as JointsOptions)
+            return this.moveTo(this.origin as MoveOptions)
         }
+        return this.jointsTo(this.origin as JointsOptions)
     }
 
     private get originIsMoveCommand() {
@@ -102,11 +98,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     private async resetToDefaultOrigin() {
-        return await this.jointsTo({
-            base: 0,
-            shoulder: 0,
-            elbow: 0,
-        })
+        return this.jointsTo({ base: 0, shoulder: 0, elbow: 0 })
     }
 
     private get defaultIpAddress() {
@@ -134,8 +126,6 @@ export interface RoboticArmOptions {
     timeoutMs?: number
     origin?: MoveOptions | JointsOptions
 }
-
-export type RoboticArmConstructorOptions = Required<RoboticArmOptions>
 
 export type ExecuteOptions = BaseOptions & (MoveOptions | JointsOptions)
 
