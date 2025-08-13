@@ -64,6 +64,8 @@
     }
   },
   "dependencies": {
+    "@neurodevs/node-wifi-connector": "^1.1.0",
+    "@types/node-wifi": "^2.0.2",
     "axios": "^1.10.0"
   }
 }
