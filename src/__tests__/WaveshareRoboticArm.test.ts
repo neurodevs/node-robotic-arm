@@ -3,6 +3,10 @@ import AbstractSpruceTest, {
     assert,
     generateId,
 } from '@sprucelabs/test-utils'
+import {
+    AutoWifiConnector,
+    FakeWifiConnector,
+} from '@neurodevs/node-wifi-connector'
 import axios, { AxiosResponse } from 'axios'
 import WaveshareRoboticArm, {
     ExecuteOptions,
@@ -21,6 +25,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         await super.beforeEach()
 
         this.setFakeAxios()
+        this.setFakeWifiConnector()
 
         delete WaveshareRoboticArm.Class
 
@@ -345,6 +350,18 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async connectsToWifi() {
+        assert.isEqualDeep(
+            FakeWifiConnector.callsToConnect[0],
+            {
+                ssid: 'RoArm-M2',
+                password: '12345678',
+            },
+            'Should connect to wifi with default ssid and no password!'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,
@@ -457,6 +474,10 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static setFakeAxios() {
         WaveshareRoboticArm.axios = new FakeAxios() as typeof axios
         FakeAxios.resetTestDouble()
+    }
+
+    private static setFakeWifiConnector() {
+        AutoWifiConnector.Class = FakeWifiConnector
     }
 
     private static get firstCallToGet() {

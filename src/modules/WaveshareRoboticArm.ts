@@ -1,3 +1,7 @@
+import {
+    AutoWifiConnector,
+    WifiConnector,
+} from '@neurodevs/node-wifi-connector'
 import axios, { AxiosResponse } from 'axios'
 
 export default class WaveshareRoboticArm implements RoboticArm {
@@ -11,7 +15,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     private queue: Promise<unknown> = Promise.resolve()
 
-    protected constructor(options?: RoboticArmOptions) {
+    protected constructor(options: RoboticArmConstructorOptions) {
         const { ipAddress, origin } = options ?? {}
 
         this.ipAddress = ipAddress ?? this.defaultIpAddress
@@ -20,7 +24,9 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     public static async Create(options?: RoboticArmOptions) {
         await this.assertIsReachable(options)
-        return new (this.Class ?? this)(options)
+
+        const wifi = await this.AutoWifiConnector()
+        return new (this.Class ?? this)({ ...options, wifi })
     }
 
     private static async assertIsReachable(options?: RoboticArmOptions) {
@@ -108,6 +114,13 @@ export default class WaveshareRoboticArm implements RoboticArm {
         this.queue = run.catch(() => {})
         return run
     }
+
+    private static async AutoWifiConnector() {
+        return AutoWifiConnector.Create({
+            ssid: 'RoArm-M2',
+            password: '12345678',
+        })
+    }
 }
 
 export interface RoboticArm {
@@ -125,6 +138,10 @@ export interface RoboticArmOptions {
     ipAddress?: string
     timeoutMs?: number
     origin?: MoveOptions | JointsOptions
+}
+
+export interface RoboticArmConstructorOptions extends RoboticArmOptions {
+    wifi: WifiConnector
 }
 
 export type ExecuteOptions = BaseOptions & (MoveOptions | JointsOptions)
