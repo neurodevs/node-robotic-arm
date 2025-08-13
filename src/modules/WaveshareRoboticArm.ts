@@ -9,6 +9,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
     public static axios = axios
     private static defaultIpAddress = '192.168.4.1'
 
+    private wifi: WifiConnector
     private ipAddress: string
     private origin?: MoveOptions | JointsOptions
     private pi = 3.1415926
@@ -16,8 +17,9 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private queue: Promise<unknown> = Promise.resolve()
 
     protected constructor(options: RoboticArmConstructorOptions) {
-        const { ipAddress, origin } = options ?? {}
+        const { wifi, ipAddress, origin } = options ?? {}
 
+        this.wifi = wifi
         this.ipAddress = ipAddress ?? this.defaultIpAddress
         this.origin = origin
     }
@@ -101,6 +103,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return this.jointsTo({ base: 0, shoulder: 0, elbow: 0 })
     }
 
+    public async disconnect() {
+        await this.wifi.disconnect()
+    }
+
     private get defaultIpAddress() {
         return WaveshareRoboticArm.defaultIpAddress
     }
@@ -128,6 +134,7 @@ export interface RoboticArm {
     jointsTo(options: JointsOptions): Promise<AxiosResponse>
     moveTo(options: MoveOptions): Promise<AxiosResponse>
     resetToOrigin(): Promise<AxiosResponse>
+    disconnect(): Promise<void>
 }
 
 export type RoboticArmConstructor = new (

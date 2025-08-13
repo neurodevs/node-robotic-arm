@@ -362,6 +362,17 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async disconnectCallsWifiDisconnect() {
+        await this.instance.disconnect()
+
+        assert.isEqual(
+            FakeWifiConnector.numCallsToDisconnect,
+            1,
+            'Should call wifi disconnect!'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,
