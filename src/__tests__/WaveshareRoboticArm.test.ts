@@ -373,6 +373,21 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async timeoutMsDefaultsTo5000ms() {
+        FakeAxios.resetTestDouble()
+
+        await WaveshareRoboticArm.Create({
+            timeoutMs: undefined,
+        })
+
+        assert.isEqual(
+            this.firstCallToGet.config.timeout,
+            5000,
+            'Should have set a default timeout of 5000ms'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,

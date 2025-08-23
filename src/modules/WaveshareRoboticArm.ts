@@ -32,7 +32,8 @@ export default class WaveshareRoboticArm implements RoboticArm {
     }
 
     private static async assertIsReachable(options?: RoboticArmOptions) {
-        const { ipAddress = this.defaultIpAddress, timeoutMs } = options ?? {}
+        const { ipAddress = this.defaultIpAddress, timeoutMs = 5000 } =
+            options ?? {}
         await this.axios.get(`http://${ipAddress}`, { timeout: timeoutMs })
     }
 
