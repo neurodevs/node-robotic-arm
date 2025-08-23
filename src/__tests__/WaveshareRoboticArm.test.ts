@@ -388,6 +388,20 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         )
     }
 
+    @test()
+    protected static async doesNotAssertReachableIfClassSet() {
+        FakeAxios.resetTestDouble()
+        WaveshareRoboticArm.Class = Object as any
+
+        await this.WaveshareRoboticArm()
+
+        assert.isEqual(
+            FakeAxios.callsToGet.length,
+            0,
+            'Should not call get if Class is set!'
+        )
+    }
+
     private static async executeCommand() {
         const options = {
             T: 1,

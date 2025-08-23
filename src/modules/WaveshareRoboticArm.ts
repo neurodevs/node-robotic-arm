@@ -26,7 +26,10 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
     public static async Create(options?: RoboticArmOptions) {
         const wifi = await this.AutoWifiConnector()
-        await this.assertIsReachable(options)
+
+        if (!this.Class) {
+            await this.assertIsReachable(options)
+        }
 
         return new (this.Class ?? this)({ ...options, wifi })
     }
