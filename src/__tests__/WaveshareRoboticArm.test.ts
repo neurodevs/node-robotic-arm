@@ -56,6 +56,35 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     }
 
     @test()
+    protected static async throwsIfIpAddressNotReachable() {
+        FakeAxios.shouldThrow = true
+
+        const err = await assert.doesThrowAsync(async () => {
+            await WaveshareRoboticArm.Create()
+        })
+
+        assert.isEqual(
+            err.message,
+            `\n\nCould not reach robotic arm at ${this.baseUrl}!\n\nPlease make sure Wi-Fi is connected to the "${this.ssid}" network (it should have automatically connected) and that any VPN is turned off.\n\n`,
+            'Did not throw correct error!'
+        )
+    }
+
+    @test()
+    protected static async doesNotAssertReachableIfClassSet() {
+        FakeAxios.resetTestDouble()
+        WaveshareRoboticArm.Class = Object as any
+
+        await this.WaveshareRoboticArm()
+
+        assert.isEqual(
+            FakeAxios.callsToGet.length,
+            0,
+            'Should not call get if Class is set!'
+        )
+    }
+
+    @test()
     protected static async canSetCustomIpAddress() {
         const ipAddress = generateId()
 
@@ -355,7 +384,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
         assert.isEqualDeep(
             FakeWifiConnector.callsToConnect[0],
             {
-                ssid: 'RoArm-M2',
+                ssid: this.ssid,
                 password: '12345678',
             },
             'Should connect to wifi with default ssid and no password!'
@@ -385,20 +414,6 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
             this.firstCallToGet.config.timeout,
             5000,
             'Should have set a default timeout of 5000ms'
-        )
-    }
-
-    @test()
-    protected static async doesNotAssertReachableIfClassSet() {
-        FakeAxios.resetTestDouble()
-        WaveshareRoboticArm.Class = Object as any
-
-        await this.WaveshareRoboticArm()
-
-        assert.isEqual(
-            FakeAxios.callsToGet.length,
-            0,
-            'Should not call get if Class is set!'
         )
     }
 
@@ -514,6 +529,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static setFakeAxios() {
         WaveshareRoboticArm.axios = new FakeAxios() as typeof axios
         FakeAxios.resetTestDouble()
+
+        FakeAxios.shouldThrow = false
     }
 
     private static setFakeWifiConnector() {
@@ -535,7 +552,8 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
     private static readonly ipAddress = '192.168.4.1'
     private static readonly baseUrl = `http://${this.ipAddress}`
     private static readonly jsUrl = `${this.baseUrl}/js`
-    private static readonly defaultTimeoutMs = Math.random()
+    private static readonly ssid = 'RoArm-M2'
+    private static readonly defaultTimeoutMs = 5000
     private static readonly waitAfterMs = 5
 
     private static resetToOriginCommand: ExecuteOptions = {

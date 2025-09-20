@@ -37,7 +37,16 @@ export default class WaveshareRoboticArm implements RoboticArm {
     private static async assertIsReachable(options?: RoboticArmOptions) {
         const { ipAddress = this.defaultIpAddress, timeoutMs = 5000 } =
             options ?? {}
-        await this.axios.get(`http://${ipAddress}`, { timeout: timeoutMs })
+
+        const baseUrl = `http://${ipAddress}`
+
+        try {
+            await this.axios.get(baseUrl, { timeout: timeoutMs })
+        } catch (e) {
+            throw new Error(
+                `\n\nCould not reach robotic arm at ${baseUrl}!\n\nPlease make sure Wi-Fi is connected to the "${this.ssid}" network (it should have automatically connected) and that any VPN is turned off.\n\n`
+            )
+        }
     }
 
     public async executeCommand(options: ExecuteOptions) {
@@ -125,9 +134,11 @@ export default class WaveshareRoboticArm implements RoboticArm {
         return run
     }
 
+    private static readonly ssid = 'RoArm-M2'
+
     private static async AutoWifiConnector() {
         return AutoWifiConnector.Create({
-            ssid: 'RoArm-M2',
+            ssid: this.ssid,
             password: '12345678',
         })
     }

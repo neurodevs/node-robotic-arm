@@ -1,6 +1,6 @@
 {
   "name": "@neurodevs/node-robotic-arm",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "main": "build/index.js",
   "repository": "https://github.com/neurodevs/node-robotic-arm.git",
   "scripts": {
