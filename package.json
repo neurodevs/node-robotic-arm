@@ -1,6 +1,7 @@
 {
   "name": "@neurodevs/node-robotic-arm",
   "version": "1.0.5",
+  "description": "Control the Waveshare robotic arm",
   "main": "build/index.js",
   "repository": "https://github.com/neurodevs/node-robotic-arm.git",
   "scripts": {
@@ -25,6 +26,11 @@
     "watch.rebuild": "yarn run clean.all && yarn install && yarn run watch.build.dev",
     "watch.tsc": "tsc -w"
   },
+  "dependencies": {
+    "@neurodevs/node-wifi-connector": "^1.1.0",
+    "@types/node-wifi": "^2.0.2",
+    "axios": "^1.10.0"
+  },
   "devDependencies": {
     "@sprucelabs/jest-json-reporter": "^9.0.26",
     "@sprucelabs/resolve-path-aliases": "^3.0.14",
@@ -41,15 +47,11 @@
     "tsc-watch": "^7.1.1",
     "typescript": "^5.8.3"
   },
-  "description": "Control the Waveshare robotic arm",
-  "skill": {
-    "namespace": "node-robotic-arm"
-  },
   "jest": {
     "testRunner": "jest-circus/runner",
-    "maxWorkers": 4,
-    "testTimeout": 120000,
     "testEnvironment": "node",
+    "testTimeout": 120000,
+    "maxWorkers": 4,
     "testPathIgnorePatterns": [
       "<rootDir>/tmp/",
       "<rootDir>/src/",
@@ -63,9 +65,7 @@
       "^#spruce/(.*)$": "<rootDir>/build/.spruce/$1"
     }
   },
-  "dependencies": {
-    "@neurodevs/node-wifi-connector": "^1.1.0",
-    "@types/node-wifi": "^2.0.2",
-    "axios": "^1.10.0"
+  "skill": {
+    "namespace": "node-robotic-arm"
   }
 }
