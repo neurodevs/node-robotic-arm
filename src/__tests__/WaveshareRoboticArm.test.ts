@@ -1,8 +1,5 @@
-import AbstractSpruceTest, {
-    test,
-    assert,
-    generateId,
-} from '@sprucelabs/test-utils'
+import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
+import generateId from '@neurodevs/generate-id'
 import {
     AutoWifiConnector,
     FakeWifiConnector,

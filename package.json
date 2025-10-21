@@ -46,6 +46,7 @@
     "axios": "^1.10.0"
   },
   "devDependencies": {
+    "@neurodevs/generate-id": "^1.0.0",
     "@sprucelabs/jest-json-reporter": "^9.0.26",
     "@sprucelabs/resolve-path-aliases": "^3.0.14",
     "@sprucelabs/test": "^10.0.11",
