@@ -1,4 +1,4 @@
-import WaveshareRoboticArm from '../modules/WaveshareRoboticArm'
+import WaveshareRoboticArm from '../modules/WaveshareRoboticArm.js'
 
 async function move1(instance: any) {
     await instance.moveTo({ x: 200, y: -300, z: -50, spd: 0.3 })

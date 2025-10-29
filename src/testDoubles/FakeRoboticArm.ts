@@ -1,11 +1,12 @@
 import { AxiosResponse } from 'axios'
+
 import {
     ExecuteOptions,
     JointsOptions,
     MoveOptions,
     RoboticArm,
     RoboticArmOptions,
-} from '../modules/WaveshareRoboticArm'
+} from '../modules/WaveshareRoboticArm.js'
 
 export default class FakeRoboticArm implements RoboticArm {
     public static callsToConstructor: RoboticArmOptions[] = []

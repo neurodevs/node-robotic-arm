@@ -1,20 +1,20 @@
-import AbstractSpruceTest, { test, assert } from '@sprucelabs/test-utils'
-import generateId from '@neurodevs/generate-id'
+import AbstractModuleTest, { test, assert } from '@neurodevs/node-tdd'
 import {
     AutoWifiConnector,
     FakeWifiConnector,
 } from '@neurodevs/node-wifi-connector'
 import axios, { AxiosResponse } from 'axios'
+
 import WaveshareRoboticArm, {
     ExecuteOptions,
     JointsOptions,
     MoveOptions,
     RoboticArm,
     RoboticArmOptions,
-} from '../modules/WaveshareRoboticArm'
-import FakeAxios from '../testDoubles/FakeAxios'
+} from '../modules/WaveshareRoboticArm.js'
+import FakeAxios from '../testDoubles/FakeAxios.js'
 
-export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
+export default class WaveshareRoboticArmTest extends AbstractModuleTest {
     private static instance: RoboticArm
     private static readonly pi = 3.1415926
 
@@ -83,7 +83,7 @@ export default class WaveshareRoboticArmTest extends AbstractSpruceTest {
 
     @test()
     protected static async canSetCustomIpAddress() {
-        const ipAddress = generateId()
+        const ipAddress = this.generateId()
 
         await this.WaveshareRoboticArm({
             ipAddress,
