@@ -923,10 +923,10 @@
     "@sprucelabs/test" "^10.0.25"
     "@sprucelabs/test-utils" "^6.0.117"
 
-"@neurodevs/node-wifi-connector@^1.1.3":
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/@neurodevs/node-wifi-connector/-/node-wifi-connector-1.1.3.tgz#a38dc0c739bb7868f4f7b2670cbe8a81d42686f8"
-  integrity sha512-PvKE/KBSFV2+e48tOt2ZCNrPZgeUlfVxu8tPfPekW+X77Hq5cAIQMlMN/snGVvSJ6HGLVIS2grLl+sbqfM5R7w==
+"@neurodevs/node-wifi-connector@1.1.4":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@neurodevs/node-wifi-connector/-/node-wifi-connector-1.1.4.tgz#2100fab6f88346a3ff5e732681676c1ec8a303ad"
+  integrity sha512-ifLnF2X2KjiS80i1y8KDQH2v2zNavz9w1IoIQZ78ZrbsymLBRzySRoWMUCHCMUFR/lSImum4HMb9eSIWy/FuMw==
   dependencies:
     node-wifi "^2.0.16"
 
