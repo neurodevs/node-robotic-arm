@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@neurodevs/generate-id": "1.1.2",
-    "@neurodevs/node-tdd": "0.2.3",
+    "@neurodevs/node-tdd": "0.2.4",
     "@sprucelabs/jest-json-reporter": "^9.0.26",
     "@sprucelabs/resolve-path-aliases": "^3.0.14",
     "@sprucelabs/test": "^10.0.11",
