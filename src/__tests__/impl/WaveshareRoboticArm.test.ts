@@ -1,4 +1,4 @@
-import AbstractModuleTest, { test, assert } from '@neurodevs/node-tdd'
+import { test, assert } from '@neurodevs/node-tdd'
 import {
     AutoWifiConnector,
     FakeWifiConnector,
@@ -13,8 +13,9 @@ import WaveshareRoboticArm, {
     RoboticArmOptions,
 } from '../../impl/WaveshareRoboticArm.js'
 import FakeAxios from '../../testDoubles/FakeAxios.js'
+import AbstractPackageTest from '../AbstractPackageTest.js'
 
-export default class WaveshareRoboticArmTest extends AbstractModuleTest {
+export default class WaveshareRoboticArmTest extends AbstractPackageTest {
     private static instance: RoboticArm
     private static readonly pi = 3.1415926
 
