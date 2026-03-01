@@ -6,7 +6,7 @@ import {
     MoveOptions,
     RoboticArm,
     RoboticArmOptions,
-} from '../modules/WaveshareRoboticArm.js'
+} from '../impl/WaveshareRoboticArm.js'
 
 export default class FakeRoboticArm implements RoboticArm {
     public static callsToConstructor: RoboticArmOptions[] = []

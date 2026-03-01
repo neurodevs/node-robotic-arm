@@ -1,7 +1,7 @@
 // RoboticArm
 
-export { default as WaveshareRoboticArm } from './modules/WaveshareRoboticArm.js'
-export * from './modules/WaveshareRoboticArm.js'
+export { default as WaveshareRoboticArm } from './impl/WaveshareRoboticArm.js'
+export * from './impl/WaveshareRoboticArm.js'
 
 export { default as FakeRoboticArm } from './testDoubles/FakeRoboticArm.js'
 export * from './testDoubles/FakeRoboticArm.js'

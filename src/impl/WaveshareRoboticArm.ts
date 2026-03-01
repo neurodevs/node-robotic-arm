@@ -42,7 +42,7 @@ export default class WaveshareRoboticArm implements RoboticArm {
 
         try {
             await this.axios.get(baseUrl, { timeout: timeoutMs })
-        } catch (e) {
+        } catch (_e) {
             throw new Error(
                 `\n\nCould not reach robotic arm at ${baseUrl}!\n\nPlease make sure Wi-Fi is connected to the "${this.ssid}" network (it should have automatically connected) and that any VPN is turned off.\n\n`
             )

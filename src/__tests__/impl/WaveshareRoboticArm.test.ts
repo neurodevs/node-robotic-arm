@@ -11,8 +11,8 @@ import WaveshareRoboticArm, {
     MoveOptions,
     RoboticArm,
     RoboticArmOptions,
-} from '../modules/WaveshareRoboticArm.js'
-import FakeAxios from '../testDoubles/FakeAxios.js'
+} from '../../impl/WaveshareRoboticArm.js'
+import FakeAxios from '../../testDoubles/FakeAxios.js'
 
 export default class WaveshareRoboticArmTest extends AbstractModuleTest {
     private static instance: RoboticArm
