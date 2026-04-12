@@ -1,0 +1,7 @@
+{
+  "version": "0.9.4",
+  "projectName": "node-robotic-arm",
+  "remote": {
+    "url": "https://git.regressionproof.ai/liquidg3/node-robotic-arm.git"
+  }
+}

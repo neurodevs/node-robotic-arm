@@ -45,6 +45,8 @@
     "@neurodevs/generate-id": "^1.1.2",
     "@neurodevs/node-tdd": "^0.2.5",
     "@neurodevs/prettier-config-ndx": "^1.0.1",
+    "@regressionproof/cli": "^0.9.4",
+    "@regressionproof/jest-reporter": "^0.9.4",
     "jest": "^30.0.4",
     "jest-circus": "^30.0.4",
     "prettier": "^3.8.1",
@@ -58,6 +60,10 @@
     "maxWorkers": 4,
     "testMatch": [
       "<rootDir>/build/__tests__/**/*.test.js?(x)"
+    ],
+    "reporters": [
+      "default",
+      "@regressionproof/jest-reporter"
     ]
   }
 }
