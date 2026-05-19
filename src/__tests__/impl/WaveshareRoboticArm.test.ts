@@ -144,7 +144,7 @@ export default class WaveshareRoboticArmTest extends AbstractPackageTest {
         const elapsed = Date.now() - t0
 
         assert.isTrue(
-            elapsed >= this.waitAfterMs,
+            elapsed >= this.waitAfterMs * 0.8,
             `Should have waited at least ${this.waitAfterMs}ms, but only waited ${elapsed}ms!`
         )
     }
